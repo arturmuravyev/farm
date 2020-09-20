@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AnimalController;
-use App\Models\Animal;
+use App\Http\Controllers\Api\AnimalController;
+use App\Http\Controllers\Api\AnimalKindController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,3 +24,5 @@ Route::get('animals/{name}',  [AnimalController::class, 'getByName']);
 Route::post('animals/age',  [AnimalController::class, 'age']);
 
 Route::post('animals', [AnimalController::class, 'store']);
+
+Route::get('animal_kinds', [AnimalKindController::class, 'getAnimalKinds']);
