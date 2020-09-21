@@ -15,7 +15,7 @@
      * DB_DATABASE=default
      * DB_USERNAME=default
      * DB_PASSWORD=secret
-  - docker-compose up -d nginx mysql phpmyadmin redis workspace 
+  - docker-compose up -d nginx mysql
   - docker-compose exec workspace bash
   - composer install
   - php artisan key:generate
