@@ -25,9 +25,10 @@ class AnimalController extends Controller
             $animal = Animal::create($request->all());
             $animal_response['error'] = null;
             $animal_response['data'] = 'ok';
+            return response()->json($animal_response, 201);
         }
         
-        return response()->json($animal_response, 201);
+        return response()->json($animal_response);
     }
 
     //get
@@ -54,7 +55,7 @@ class AnimalController extends Controller
             $animal->save();
 
             $animal_response['error'] = null;
-            $animal_response['data'] = 'ok';//$animal;
+            $animal_response['data'] = 'ok';
         }
 
         return response()->json($animal_response);

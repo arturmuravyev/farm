@@ -1921,31 +1921,129 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      animalKinds: []
+      animalKinds: [],
+      animals: []
     };
   },
-  mounted: function mounted() {//this.loadAnimalKinds();
+  mounted: function mounted() {
+    this.farming();
   },
   methods: {
     getPic: function getPic(kind) {
       return 'images/' + kind.kind + '.png';
-      console.log('Greet');
     },
-    loadAnimalKinds: function loadAnimalKinds() {
+    getSize: function getSize(animal) {
+      var size = animal.size * 12 + 20;
+      var max_size = this.animalKinds.filter(function (kind) {
+        return kind.kind == animal.kind;
+      })[0]['max_size'];
+      return size <= max_size ? size + 'px' : max_size + 'px';
+    },
+    farming: function farming() {
       var _this = this;
 
-      // load API
+      setInterval(function () {
+        if (_this.animals.length > 0) {
+          for (var i = 0; i < _this.animals.length; i++) {
+            var max_size = _this.animalKinds.filter(function (kind) {
+              return kind.kind == _this.animals[i].kind;
+            })[0]['max_size'];
+
+            var size = _this.animals[i].size * 12 + 32;
+            if (size < max_size) _this.age(_this.animals[i]['name']);
+          }
+        }
+      }, 3000);
+    },
+    loadAnimalKinds: function loadAnimalKinds() {
+      var _this2 = this;
+
       axios.get('/api/animal_kinds').then(function (response) {
-        console.log('Response = ', response);
-        _this.animalKinds = response.data.data;
+        _this2.animalKinds = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    grow: function grow(kind) {}
+    create: function create(kind) {
+      var _this3 = this;
+
+      kind['hidden'] = true;
+      var name = this.rndStr(7); //create animal
+
+      axios.post('/api/animals', {
+        "kind": kind.kind,
+        "name": name
+      }).then(function (response) {
+        if (response.data.data == 'ok') {
+          _this3.getAnimal(name);
+        } else {
+          console.log('data is not ok');
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    getAnimal: function getAnimal(name) {
+      var _this4 = this;
+
+      // get animal by name
+      axios.get('/api/animals/' + name).then(function (response) {
+        _this4.animals.push(response.data[0]);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    age: function age(name) {
+      var _this5 = this;
+
+      // age animal by name
+      axios.post('/api/animals/age', {
+        "name": name
+      }).then(function (response) {
+        if (response.data.data == 'ok') {
+          _this5.updateAnimal(name);
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    updateAnimal: function updateAnimal(name) {
+      var _this6 = this;
+
+      // update animal by name
+      axios.get('/api/animals/' + name).then(function (response) {
+        var exist_animal = _this6.animals.filter(function (animal) {
+          return animal.name == name;
+        });
+
+        if (exist_animal) {
+          _this6.animals.filter(function (animal) {
+            return animal.name == name;
+          })[0]['size'] = response.data[0]['size'];
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    rndStr: function rndStr(len) {
+      var text = "";
+      var chars = "abcdefghijklmnopqrstuvwxyz";
+
+      for (var i = 0; i < len; i++) {
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      return text;
+    }
   }
 });
 
@@ -19601,7 +19699,10 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "container m-5" },
+    {
+      staticClass: "container w-100 m-3",
+      staticStyle: { "background-color": "", height: "100vh" }
+    },
     [
       _c(
         "button",
@@ -19615,17 +19716,43 @@ var render = function() {
       _vm._v(" "),
       _vm._l(_vm.animalKinds, function(kind) {
         return _c("div", { staticClass: "d-inline" }, [
-          _c("img", {
-            staticClass: "ml-3",
-            attrs: { src: _vm.getPic(kind), height: "32px" },
-            on: {
-              click: function($event) {
-                return _vm.grow(kind)
-              }
-            }
-          })
+          !kind.hidden
+            ? _c("img", {
+                staticClass: "ml-3 ",
+                attrs: { src: _vm.getPic(kind), id: kind.kind, height: "32px" },
+                on: {
+                  click: function($event) {
+                    return _vm.create(kind)
+                  }
+                }
+              })
+            : _vm._e()
         ])
-      })
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "vertical-center",
+          staticStyle: { "text-align": "center" }
+        },
+        _vm._l(_vm.animals, function(animal) {
+          return _c(
+            "div",
+            {
+              staticClass: "d-inline ml-1",
+              staticStyle: { margin: "0 auto 0 auto" }
+            },
+            [
+              _c("img", {
+                staticClass: "ml-3",
+                attrs: { src: _vm.getPic(animal), height: _vm.getSize(animal) }
+              })
+            ]
+          )
+        }),
+        0
+      )
     ],
     2
   )
