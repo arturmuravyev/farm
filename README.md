@@ -8,13 +8,13 @@
   ### Installation
 
   - git clone https://github.com/Laradock/laradock.git 
-  - cd laradock
   - copy env-example .env
   - Edit .env file: 
      * DB_HOST=mysql
      * DB_DATABASE=default
      * DB_USERNAME=default
      * DB_PASSWORD=secret
+  - cd laradock
   - docker-compose up -d nginx mysql
   - docker-compose exec workspace bash
   - composer install
