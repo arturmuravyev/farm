@@ -50,8 +50,8 @@ class AnimalController extends Controller
             $animal = Animal::select('id', 'age', 'kind', 'size')->where('name', $request->name)->get()->first();
             $growth_factor = AnimalKind::select('growth_factor')->where('kind', $animal->kind)->value('growth_factor');
 
-            $animal->age += round($growth_factor);
-            $animal->size += round($growth_factor);
+            $animal->age += 1;//round($growth_factor);
+            $animal->size += 12*round($growth_factor);
             $animal->save();
 
             $animal_response['error'] = null;

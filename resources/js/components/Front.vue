@@ -5,7 +5,7 @@
 				Get Animal Kinds
 			</button>
 			<div class="d-inline" v-for="kind in animalKinds">
-				<img :src="getPic(kind)" v-if="!kind.hidden" v-on:click="create(kind);" :id="kind.kind" height="32px" class="ml-3 ">
+				<img :src="getPic(kind)" v-if="!kind.hidden" v-on:click="create(kind);" :id="kind.kind" height="32px" class="ml-3 " style="cursor: pointer;">
 			</div>
 
 			<div class="vertical-center" style="text-align: center;">
@@ -23,6 +23,7 @@
 			return {
 				animalKinds: [],
 				animals: [],
+				kinds: [],
 			}
 		},
 
@@ -37,7 +38,7 @@
 			},
 
 			getSize: function(animal){
-				let size = animal.size*12 + 20;
+				let size = animal.size;
 				let max_size = this.animalKinds.filter( kind => (kind.kind == animal.kind) )[0]['max_size'];
 
 				return (size <= max_size) ? (size + 'px') : (max_size + 'px');
@@ -45,10 +46,11 @@
 
 			farming: function(){  
 			    setInterval( () => {
+			    	console.log('this.animals.length =', this.animals.length);
 			    	if(this.animals.length > 0){
 			    		for (var i = 0; i < this.animals.length; i++) {
 			    			let max_size = this.animalKinds.filter( kind => (kind.kind == this.animals[i].kind) )[0]['max_size'];
-			    			let size = this.animals[i].size*12 + 32;
+			    			let size = this.animals[i].size;
 			    			if(size < max_size)
 			    			this.age(this.animals[i]['name']);
 			    		}
@@ -57,6 +59,7 @@
 			},
 
 			loadAnimalKinds: function() {
+				this.animals = [];
 				axios.get('/api/animal_kinds')
 				.then( (response) => {
 					this.animalKinds = response.data.data;
@@ -68,6 +71,7 @@
 
 			create: function(kind) {
 				kind['hidden'] = true;
+
 				let name = this.rndStr(7);
 				//create animal
 				axios.post('/api/animals',{

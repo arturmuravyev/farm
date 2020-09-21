@@ -1931,7 +1931,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       animalKinds: [],
-      animals: []
+      animals: [],
+      kinds: []
     };
   },
   mounted: function mounted() {
@@ -1942,7 +1943,7 @@ __webpack_require__.r(__webpack_exports__);
       return 'images/' + kind.kind + '.png';
     },
     getSize: function getSize(animal) {
-      var size = animal.size * 12 + 20;
+      var size = animal.size;
       var max_size = this.animalKinds.filter(function (kind) {
         return kind.kind == animal.kind;
       })[0]['max_size'];
@@ -1952,13 +1953,15 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       setInterval(function () {
+        console.log('this.animals.length =', _this.animals.length);
+
         if (_this.animals.length > 0) {
           for (var i = 0; i < _this.animals.length; i++) {
             var max_size = _this.animalKinds.filter(function (kind) {
               return kind.kind == _this.animals[i].kind;
             })[0]['max_size'];
 
-            var size = _this.animals[i].size * 12 + 32;
+            var size = _this.animals[i].size;
             if (size < max_size) _this.age(_this.animals[i]['name']);
           }
         }
@@ -1967,6 +1970,7 @@ __webpack_require__.r(__webpack_exports__);
     loadAnimalKinds: function loadAnimalKinds() {
       var _this2 = this;
 
+      this.animals = [];
       axios.get('/api/animal_kinds').then(function (response) {
         _this2.animalKinds = response.data.data;
       })["catch"](function (error) {
@@ -19719,6 +19723,7 @@ var render = function() {
           !kind.hidden
             ? _c("img", {
                 staticClass: "ml-3 ",
+                staticStyle: { cursor: "pointer" },
                 attrs: { src: _vm.getPic(kind), id: kind.kind, height: "32px" },
                 on: {
                   click: function($event) {
