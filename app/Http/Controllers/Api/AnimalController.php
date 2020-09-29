@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AnimalController extends Controller
 {
-    //post
+    //post Req
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
